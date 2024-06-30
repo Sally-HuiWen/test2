@@ -8,6 +8,19 @@ from .orders import seed_orders, undo_orders
 from .order_items import seed_order_items, undo_order_items
 
 from app.models.db import db, environment, SCHEMA
+from sqlalchemy import inspect
+
+def create_schema():
+    if environment == 'production':
+        db.session.execute(f"CREATE SCHEMA IF NOT EXISTS {SCHEMA}")
+        db.session.commit()
+
+def table_exists(table_name):
+    insp = inspect(db.engine)
+    return insp.has_table(table_name, schema=SCHEMA)
+
+# Ensure the schema exists
+create_schema()
 
 # Creates a seed group to hold our commands
 # So we can type `flask seed --help`
@@ -18,6 +31,7 @@ seed_commands = AppGroup('seed')
 @seed_commands.command('all')
 def seed():
     if environment == 'production':
+        create_schema()
         # Before seeding in production, you want to run the seed undo
         # command, which will  truncate all tables prefixed with
         # the schema name (see comment in users.py undo_users function).
@@ -43,11 +57,19 @@ def seed():
 # Creates the `flask seed undo` command
 @seed_commands.command('undo')
 def undo():
-    undo_order_items()
-    undo_orders()
-    undo_shopping_cart_items()
-    undo_reviews()
-    undo_product_images()
-    undo_products()
-    undo_users()
+    create_schema()
+    if table_exists('order_items'):
+        undo_order_items()
+    if table_exists('orders'):
+        undo_orders()
+    if table_exists('shopping_cart_items'):
+        undo_shopping_cart_items()
+    if table_exists('reviews'):
+        undo_reviews()
+    if table_exists('product_images'):
+        undo_product_images()
+    if table_exists('products'):
+        undo_products()
+    if table_exists('users'):
+        undo_users()
     # Add other undo functions here

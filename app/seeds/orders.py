@@ -1,5 +1,10 @@
 from app.models import db, Order, environment, SCHEMA
 from sqlalchemy.sql import text
+from sqlalchemy import inspect
+
+def table_exists(table_name):
+    insp = inspect(db.engine)
+    return insp.has_table(table_name, schema=SCHEMA)
 
 def seed_orders():
     order1 = Order(
@@ -15,7 +20,7 @@ def seed_orders():
     db.session.commit()
 
 def undo_orders():
-    if environment == "production":
+    if environment == "production" and table_exists('orders'):
         db.session.execute(f"TRUNCATE table {SCHEMA}.orders RESTART IDENTITY CASCADE;")
     else:
         db.session.execute(text("DELETE FROM orders"))
