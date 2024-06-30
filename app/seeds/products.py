@@ -1,10 +1,5 @@
 from app.models import db, Product, environment, SCHEMA
 from sqlalchemy.sql import text
-from sqlalchemy import inspect
-
-def table_exists(table_name):
-    insp = inspect(db.engine)
-    return insp.has_table(table_name, schema=SCHEMA)
 
 def seed_products():
     product1 = Product(
@@ -41,7 +36,7 @@ def seed_products():
     db.session.commit()
 
 def undo_products():
-    if environment == "production" and table_exists('products'):
+    if environment == "production":
         db.session.execute(f"TRUNCATE table {SCHEMA}.products RESTART IDENTITY CASCADE;")
     else:
         db.session.execute(text("DELETE FROM products"))

@@ -1,11 +1,6 @@
 from app.models import db, shopping_cart_item, environment, SCHEMA
 from sqlalchemy.sql import text
 from ..models.shopping_cart_item import shopping_cart_items
-from sqlalchemy import inspect
-
-def table_exists(table_name):
-    insp = inspect(db.engine)
-    return insp.has_table(table_name, schema=SCHEMA)
 
 def seed_shopping_cart_items():
     items = [
@@ -25,7 +20,7 @@ def seed_shopping_cart_items():
     db.session.commit()
 
 def undo_shopping_cart_items():
-    if environment == "production" and table_exists('shopping_cart_items'):
+    if environment == "production":
         db.session.execute(f"TRUNCATE table {SCHEMA}.shopping_cart_items RESTART IDENTITY CASCADE;")
     else:
         db.session.execute(text("DELETE FROM shopping_cart_items"))

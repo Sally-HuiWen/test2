@@ -1,11 +1,6 @@
 from app.models import db, order_items, environment, SCHEMA
 from sqlalchemy.sql import text
 from ..models.order_items import order_item_association
-from sqlalchemy import inspect
-
-def table_exists(table_name):
-    insp = inspect(db.engine)
-    return insp.has_table(table_name, schema=SCHEMA)
 
 def seed_order_items():
     order_items_values = [
@@ -25,7 +20,7 @@ def seed_order_items():
     db.session.commit()
 
 def undo_order_items():
-    if environment == "production" and table_exists('order_items'):
+    if environment == "production":
         db.session.execute(f"TRUNCATE table {SCHEMA}.order_items RESTART IDENTITY CASCADE;")
     else:
         db.session.execute(text("DELETE FROM order_items"))

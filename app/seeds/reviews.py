@@ -2,11 +2,6 @@ from app.models import db, environment, SCHEMA
 from sqlalchemy.sql import text
 from datetime import datetime
 from ..models.review import reviews
-from sqlalchemy import inspect
-
-def table_exists(table_name):
-    insp = inspect(db.engine)
-    return insp.has_table(table_name, schema=SCHEMA)
 
 def seed_reviews():
     review_values = [
@@ -26,7 +21,7 @@ def seed_reviews():
     db.session.commit()
 
 def undo_reviews():
-    if environment == "production" and table_exists('reviews'):
+    if environment == "production":
         db.session.execute(f"TRUNCATE table {SCHEMA}.reviews RESTART IDENTITY CASCADE;")
     else:
         db.session.execute(text("DELETE FROM reviews"))
