@@ -7,11 +7,6 @@ from .shopping_cart_items import seed_shopping_cart_items, undo_shopping_cart_it
 from .orders import seed_orders, undo_orders
 from .order_items import seed_order_items, undo_order_items
 
-
-
-
-
-
 from app.models.db import db, environment, SCHEMA
 
 # Creates a seed group to hold our commands
