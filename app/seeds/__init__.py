@@ -9,6 +9,12 @@ from .order_items import seed_order_items, undo_order_items
 
 from app.models.db import db, environment, SCHEMA
 
+# Ensure the schema exists
+def create_schema():
+    if environment == 'production':
+        db.session.execute(f"CREATE SCHEMA IF NOT EXISTS {SCHEMA}")
+        db.session.commit()
+
 # Creates a seed group to hold our commands
 # So we can type `flask seed --help`
 seed_commands = AppGroup('seed')
@@ -18,6 +24,7 @@ seed_commands = AppGroup('seed')
 @seed_commands.command('all')
 def seed():
     if environment == 'production':
+        create_schema()
         # Before seeding in production, you want to run the seed undo
         # command, which will  truncate all tables prefixed with
         # the schema name (see comment in users.py undo_users function).
