@@ -6,3 +6,6 @@ order_item_association = db.Table(
     db.Column('product_id', db.Integer, db.ForeignKey(add_prefix_for_prod('products.id'), ondelete='CASCADE'), primary_key = True),
     db.Column('quantity', db.Integer)
 )
+
+if environment == "production":
+    order_item_association.schema = SCHEMA

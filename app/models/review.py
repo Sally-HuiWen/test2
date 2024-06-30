@@ -1,4 +1,4 @@
-from .db import db, add_prefix_for_prod
+from .db import db, environment, SCHEMA, add_prefix_for_prod
 from datetime import datetime
 
 reviews = db.Table(
@@ -13,3 +13,6 @@ reviews = db.Table(
     db.Column('created_at', db.DateTime, default=datetime.utcnow),
     db.Column('updated_at', db.DateTime, onupdate=datetime.utcnow)
 )
+
+if environment == "production":
+   reviews.schema = SCHEMA

@@ -9,3 +9,6 @@ shopping_cart_items = db.Table(
   db.Column('quantity', db.Integer)
 
 )
+
+if environment == "production":
+    shopping_cart_items.schema = SCHEMA
